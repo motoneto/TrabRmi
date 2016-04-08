@@ -12,7 +12,7 @@ public class LerIp {
 		try {
 			IP = InetAddress.getLocalHost();
 			String IPString = IP.getHostAddress();
-			System.out.println("Meu IP �: " + IP.getHostAddress());
+			System.out.println("Meu IP é: " + IP.getHostAddress());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

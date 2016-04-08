@@ -3,7 +3,7 @@ package br.dagostini.jshare.comun;
 import java.io.Serializable;
 
 /**
- * Identifica��o do cliente.
+ * Identificação do cliente.
  * 
  * @author fernandod
  *

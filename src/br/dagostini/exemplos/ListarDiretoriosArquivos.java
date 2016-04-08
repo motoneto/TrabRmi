@@ -28,7 +28,7 @@ public class ListarDiretoriosArquivos {
 			}
 		}
 
-		System.out.println("Diret�rios");
+		System.out.println("Diretórios");
 		for (Diretorio dir : listaDiretorios) {
 			System.out.println("\t" + dir.getNome());
 		}

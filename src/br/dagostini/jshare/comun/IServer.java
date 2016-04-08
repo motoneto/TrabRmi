@@ -12,7 +12,7 @@ public interface IServer extends Remote {
 	public static final String NOME_SERVICO = "JShare";
 
 	/**
-	 * Recebe informa��es de um novo cliente.
+	 * Recebe informações de um novo cliente.
 	 * 
 	 * @param c
 	 * @throws RemoteException
@@ -20,7 +20,7 @@ public interface IServer extends Remote {
 	public void registrarCliente(Cliente c) throws RemoteException;
 
 	/**
-	 * Recebe a lista de arquivos dispon�veis no cliente.
+	 * Recebe a lista de arquivos disponíveis no cliente.
 	 * 
 	 * @param c
 	 * @param lista
@@ -31,7 +31,7 @@ public interface IServer extends Remote {
 
 	/**
 	 * Usado quando um cliente deseja procurar um arquivo pelo nome, o
-	 * servidor l� todos os arquivos publicados e retorna uma mapa contendo
+	 * servidor lê todos os arquivos publicados e retorna uma mapa contendo
 	 * os resultados em cada cliente.
 	 * 
 	 * @param nome
@@ -42,7 +42,7 @@ public interface IServer extends Remote {
 			throws RemoteException;
 
 	/**
-	 * Recebe informa��es do arquivo e retorna o arquivo em formato
+	 * Recebe informações do arquivo e retorna o arquivo em formato
 	 * de array de bytes. 
 	 * 
 	 * @param arq
@@ -52,7 +52,7 @@ public interface IServer extends Remote {
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException;
 
 	/**
-	 * Desconecta o cliente, tornando tamb�m indispon�vel seus arquivos
+	 * Desconecta o cliente, tornando também indisponível seus arquivos
 	 * para as buscas. 
 	 * 
 	 * @param c

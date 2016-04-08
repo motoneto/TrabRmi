@@ -11,12 +11,12 @@ public class LeituraEscritaDeArquivos {
 
 	public LeituraEscritaDeArquivos(File f) {
 
-		// 2 - Ao receber um par�metro f l� seu conte�do e o coloca na mem�ria.
-		// Todo o conte�do do arquivo se encontra no array de bytes agora.
+		// 2 - Ao receber um parâmetro f lê seu conteúdo e o coloca na memória.
+		// Todo o conteúdo do arquivo se encontra no array de bytes agora.
 		byte[] dados = leia(f);
 
 		// 3 - Pega o array de bytes e escreve em num novo arquivo.
-		escreva(new File("C�pia de " + f.getName()), dados);
+		escreva(new File("Cópia de " + f.getName()), dados);
 	}
 
 	public byte[] leia(File arq) {
