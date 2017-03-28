@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import br.dagostini.jshare.comum.pojos.Arquivo;
-import br.dagostini.jshare.comun.Cliente;
+import br.univel.jshare.comum.Arquivo;
+import br.univel.jshare.comum.Cliente;
 
 public class MeuModelo extends AbstractTableModel implements TableModel {
 

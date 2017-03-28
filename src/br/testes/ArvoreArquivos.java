@@ -15,8 +15,8 @@ import javax.swing.table.TableModel;
 
 import com.sun.javafx.event.EventQueue;
 
-import br.dagostini.jshare.comum.pojos.Arquivo;
-import br.dagostini.jshare.comun.Cliente;
+import br.univel.jshare.comum.Arquivo;
+import br.univel.jshare.comum.Cliente;
 
 public class ArvoreArquivos {
 

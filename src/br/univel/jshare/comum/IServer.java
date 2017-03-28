@@ -1,11 +1,9 @@
-package br.dagostini.jshare.comun;
+package br.univel.jshare.comum;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
-
-import br.dagostini.jshare.comum.pojos.Arquivo;
 
 public interface IServer extends Remote {
 
@@ -38,7 +36,7 @@ public interface IServer extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
-	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
+	public Map<Cliente, List<Arquivo>> procurarArquivo(String query, TipoFiltro tipoFiltro, String filtro)
 			throws RemoteException;
 
 	/**
@@ -49,7 +47,7 @@ public interface IServer extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
-	public byte[] baixarArquivo(Arquivo arq) throws RemoteException;
+	public byte[] baixarArquivo(Cliente cli, Arquivo arq) throws RemoteException;
 
 	/**
 	 * Desconecta o cliente, tornando também indisponível seus arquivos
