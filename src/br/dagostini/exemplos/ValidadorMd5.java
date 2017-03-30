@@ -7,6 +7,8 @@ public class ValidadorMd5 {
 	
 	public String getMd5(File file) {
 		
+		
+		return null;
 	}
 	
 }
