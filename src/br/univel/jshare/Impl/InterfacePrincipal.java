@@ -1,40 +1,10 @@
 package br.univel.jshare.Impl;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import br.dagostini.exemplos.ListarDiretoriosArquivos;
-import br.univel.jshare.comum.Arquivo;
-import br.univel.jshare.comum.Cliente;
-import br.univel.jshare.comum.IServer;
-import br.univel.jshare.comum.TipoFiltro;
-
-import java.awt.GridBagLayout;
-import javax.swing.JSplitPane;
 import java.awt.GridBagConstraints;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.JButton;
-import javax.swing.JToolBar;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +14,42 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.awt.event.ActionEvent;
-import javax.swing.JComboBox;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
+
+import br.univel.jshare.comum.Arquivo;
+import br.univel.jshare.comum.Cliente;
+import br.univel.jshare.comum.IServer;
+import br.univel.jshare.comum.MeuModelo;
+import br.univel.jshare.comum.TipoFiltro;
+import br.univel.jshare.comum.ValidadorMd5;
 
 public class InterfacePrincipal extends JFrame implements IServer {
 
@@ -59,19 +62,20 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	private JTextField fieldQuery;
 	private JTextField fieldIp;
 	private JTextField fieldPorta;
-	private JButton btnIniciar;
 	private JTextArea fieldStatus;
 	private JButton btnParar;
 	private JButton btnConectar;
 	private JButton btnSair;
 	private JButton btnBaixar;
-	private JButton btnUpar;
+	// private JButton btnUpar;
 	private JTextArea fieldStatusCliente;
 	private JLabel lblTipofiltro;
 	private JComboBox<TipoFiltro> comboTipoFiltro;
 	private JLabel lblFiltro;
 	private JTextField fieldFiltro;
 	private JButton btnProcurar;
+
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	Map<Cliente, List<Arquivo>> mapaArquivos = new HashMap<>();
 
@@ -80,7 +84,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 
 	IServer conexaoCliente;
 	Registry registryConexaoCliente;
-
+	private JTable tbArquivos;
 
 	/**
 	 * Launch the application.
@@ -103,7 +107,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	 */
 	public InterfacePrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 600);
+		setBounds(100, 100, 1000, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -131,21 +135,6 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		gbl_panel.rowWeights = new double[] { 1.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-//		btnIniciar = new JButton("Iniciar");
-//		btnIniciar.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//
-//				iniciaServico();
-//
-//			}
-//		});
-//		GridBagConstraints gbc_btnIniciar = new GridBagConstraints();
-//		gbc_btnIniciar.fill = GridBagConstraints.BOTH;
-//		gbc_btnIniciar.insets = new Insets(0, 0, 5, 5);
-//		gbc_btnIniciar.gridx = 0;
-//		gbc_btnIniciar.gridy = 0;
-//		panel.add(btnIniciar, gbc_btnIniciar);
-
 		fieldStatus = new JTextArea();
 		fieldStatus.setEditable(false);
 		GridBagConstraints gbc_fieldStatus = new GridBagConstraints();
@@ -170,14 +159,14 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		gbc_btnParar.gridx = 0;
 		gbc_btnParar.gridy = 0;
 		panel.add(btnParar, gbc_btnParar);
-		
+
 		JPanel panel_1 = new JPanel();
 		splitPane.setLeftComponent(panel_1);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
 		gbl_panel_1.columnWidths = new int[] { 0, 0, 0, 0, 75, 0, 0 };
-		gbl_panel_1.rowHeights = new int[] { 0, 0, 0, 0, 0 };
-		gbl_panel_1.columnWeights = new double[] { 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panel_1.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_panel_1.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
+		gbl_panel_1.columnWeights = new double[] { 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel_1.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE };
 		panel_1.setLayout(gbl_panel_1);
 
 		JLabel lblip = new JLabel("IP");
@@ -258,7 +247,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		gbc_fieldQuery.gridy = 1;
 		panel_1.add(fieldQuery, gbc_fieldQuery);
 		fieldQuery.setColumns(10);
-		
+
 		btnProcurar = new JButton("Procurar");
 		btnProcurar.setEnabled(false);
 		btnProcurar.addActionListener(new ActionListener() {
@@ -273,19 +262,19 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		gbc_btnProcurar.gridy = 1;
 		panel_1.add(btnProcurar, gbc_btnProcurar);
 
-		btnUpar = new JButton("Upar");
-		btnUpar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				uparArquivos();
-			}
-		});
-		btnUpar.setEnabled(false);
-		GridBagConstraints gbc_btnUpar = new GridBagConstraints();
-		gbc_btnUpar.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnUpar.insets = new Insets(0, 0, 5, 0);
-		gbc_btnUpar.gridx = 5;
-		gbc_btnUpar.gridy = 1;
-		panel_1.add(btnUpar, gbc_btnUpar);
+		// btnUpar = new JButton("Upar");
+		// btnUpar.addActionListener(new ActionListener() {
+		// public void actionPerformed(ActionEvent arg0) {
+		// uparArquivos();
+		// }
+		// });
+		// btnUpar.setEnabled(false);
+		// GridBagConstraints gbc_btnUpar = new GridBagConstraints();
+		// gbc_btnUpar.fill = GridBagConstraints.HORIZONTAL;
+		// gbc_btnUpar.insets = new Insets(0, 0, 5, 0);
+		// gbc_btnUpar.gridx = 5;
+		// gbc_btnUpar.gridy = 1;
+		// panel_1.add(btnUpar, gbc_btnUpar);
 
 		lblTipofiltro = new JLabel("TipoFiltro");
 		GridBagConstraints gbc_lblTipofiltro = new GridBagConstraints();
@@ -319,19 +308,25 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		gbc_fieldFiltro.gridy = 2;
 		panel_1.add(fieldFiltro, gbc_fieldFiltro);
 		fieldFiltro.setColumns(10);
-		
-				btnBaixar = new JButton("baixar");
-				btnBaixar.setEnabled(false);
-				GridBagConstraints gbc_btnBaixar = new GridBagConstraints();
-				gbc_btnBaixar.fill = GridBagConstraints.HORIZONTAL;
-				gbc_btnBaixar.gridwidth = 2;
-				gbc_btnBaixar.insets = new Insets(0, 0, 5, 0);
-				gbc_btnBaixar.gridx = 4;
-				gbc_btnBaixar.gridy = 2;
-				panel_1.add(btnBaixar, gbc_btnBaixar);
+
+		btnBaixar = new JButton("baixar");
+		btnBaixar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				fazerDowload();
+			}
+		});
+		btnBaixar.setEnabled(false);
+		GridBagConstraints gbc_btnBaixar = new GridBagConstraints();
+		gbc_btnBaixar.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnBaixar.gridwidth = 2;
+		gbc_btnBaixar.insets = new Insets(0, 0, 5, 0);
+		gbc_btnBaixar.gridx = 4;
+		gbc_btnBaixar.gridy = 2;
+		panel_1.add(btnBaixar, gbc_btnBaixar);
 
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane.gridwidth = 6;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
@@ -341,9 +336,19 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		fieldStatusCliente = new JTextArea();
 		fieldStatusCliente.setEditable(false);
 		scrollPane.setViewportView(fieldStatusCliente);
-		splitPane.setDividerLocation(250);
-		
+
+		tbArquivos = new JTable();
+		GridBagConstraints gbc_tbArquivos = new GridBagConstraints();
+		gbc_tbArquivos.gridwidth = 6;
+		gbc_tbArquivos.insets = new Insets(0, 0, 0, 5);
+		gbc_tbArquivos.fill = GridBagConstraints.BOTH;
+		gbc_tbArquivos.gridx = 0;
+		gbc_tbArquivos.gridy = 4;
+		panel_1.add(tbArquivos, gbc_tbArquivos);
+		splitPane.setDividerLocation(400);
+
 		iniciaServico();
+
 	}
 
 	/*
@@ -351,28 +356,24 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	 * Metodos locais para Cliente
 	 * 
 	 */
-	public void uparArquivos(){
-		
+	public void uparArquivos() {
+
 		List<Arquivo> list = listarAquivosLocais();
-		
-		list.forEach(e ->{
-			System.out.println(e.getNome());
-		});
+
 		Cliente c = getClienteLocal();
-		
+
 		try {
 			conexaoCliente.publicarListaArquivos(c, list);
 			fieldStatusCliente.append("Sua lista foi atualizada com sucesso\n");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
-	}
-	
-	private List<Arquivo> listarAquivosLocais() {
-		
-		File dirStart = new File("." + File.separatorChar + "shared" + File.separatorChar);
 
+	}
+
+	private List<Arquivo> listarAquivosLocais() {
+
+		File dirStart = new File("." + File.separatorChar + "shared" + File.separatorChar);
 		List<Arquivo> listaArquivos = new ArrayList<>();
 		for (File file : dirStart.listFiles()) {
 			if (file.isFile()) {
@@ -382,44 +383,89 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				String extensao = file.getName().substring(file.getName().lastIndexOf("."), file.getName().length());
 				arq.setExtensao(extensao);
 				arq.setPath(file.getPath());
-				arq.setDataHoraModificacao(new Date());
-				arq.setMd5("");
-				
+				arq.setDataHoraModificacao(new Date(file.lastModified()));
+				byte[] md;
+				try {
+					md = Files.readAllBytes(Paths.get(file.getPath()));
+					arq.setMd5(ValidadorMd5.getMd5(md));
+					System.out.println(ValidadorMd5.getMd5(md));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				listaArquivos.add(arq);
 			}
 		}
 		return listaArquivos;
 	}
 
-	public void procurarArquivo(){
+	public void procurarArquivo() {
 		String query = fieldQuery.getText();
 		String filtro = fieldFiltro.getText();
 		TipoFiltro tipoFiltro = TipoFiltro.valueOf(comboTipoFiltro.getSelectedItem().toString());
-		fieldStatusCliente.append("\tQuery: "+query+"\tfiltro: "+filtro+"\tTipoFiltro: "+tipoFiltro+"\n");
+		fieldStatusCliente.append("\tQuery: " + query + "\tfiltro: " + filtro + "\tTipoFiltro: " + tipoFiltro + "\n");
 		try {
 			Map<Cliente, List<Arquivo>> resultMap = conexaoCliente.procurarArquivo(query, tipoFiltro, filtro);
-			
-			resultMap.keySet().forEach(e ->{
-				fieldStatusCliente.append("Cliente: "+e.getNome()+
-										  "\tIp: "+e.getIp()+
-										  "\tPorta"+e.getPorta()+
-										  "\n");
-				
-				List<Arquivo> listArq = resultMap.get(e);
-				listArq.forEach(arq -> {
-					fieldStatusCliente.append("Nome: "+arq.getNome()+
-											  "Extensão: "+arq.getExtensao()+
-											  "Path: "+arq.getPath()+
-											  "\n");
-				});
-			});
-			
+
+			TableModel tb = new MeuModelo(resultMap);
+			tbArquivos.setModel(tb);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
+	private void fazerDowload() {
+		Cliente c = new Cliente();
+		Arquivo a = new Arquivo();
+
+		int linha = tbArquivos.getSelectedRow();
+		c.setNome(tbArquivos.getValueAt(linha, 0).toString());
+		c.setIp(tbArquivos.getValueAt(linha, 1).toString());
+		c.setPorta(Integer.valueOf(tbArquivos.getValueAt(linha, 2).toString()));
+		a.setNome(tbArquivos.getValueAt(linha, 3).toString());
+		a.setPath(tbArquivos.getValueAt(linha, 4).toString());
+		a.setExtensao(tbArquivos.getValueAt(linha, 5).toString());
+		a.setTamanho(Integer.valueOf(tbArquivos.getValueAt(linha, 6).toString()));
+		a.setMd5(tbArquivos.getValueAt(linha, 7).toString());
+
+		try {
+			Registry registryConDowload = LocateRegistry.getRegistry(c.getIp(), c.getPorta());
+			IServer conDownload = (IServer) registryConDowload.lookup(IServer.NOME_SERVICO);
+
+			byte[] bytes = conDownload.baixarArquivo(c, a);
+
+			if(bytes == null){
+				System.out.println("veio nulo");
+			}else{
+				String bytesBaixado = ValidadorMd5.getMd5(bytes);
+				if (a.getMd5().equals(bytesBaixado)) {
+					fieldStatusCliente.append("Arquivo ìntegro baixado");
+					escreva(new File("cópia_de_" + a.getNome()), bytes);
+				}else{
+					fieldStatusCliente.append("Arquivo corrompido baixado");
+					escreva(new File("cópia_de_" + a.getNome()), bytes);
+				}
+			}
+
+		} catch (RemoteException | NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void escreva(File arq, byte[] dados) {
+		String path = "." + File.separatorChar + "shared" + File.separatorChar + arq.getName();
+		System.out.println(path + arq.getName());
+		try {
+			Files.write(Paths.get(path), dados, StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
 	public Cliente getClienteLocal() {
 		String ip = "";
 		String nome = "";
@@ -430,11 +476,11 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		Cliente cliente = new Cliente();
 		cliente.setIp(ip);
 		cliente.setNome(nome);
-	    cliente.setPorta(PORTA_SERVER);
+		cliente.setPorta(PORTA_SERVER);
 
 		return cliente;
 	}
@@ -445,10 +491,11 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		try {
 			registryConexaoCliente = LocateRegistry.getRegistry(server, porta);
 			conexaoCliente = (IServer) registryConexaoCliente.lookup(IServer.NOME_SERVICO);
-			
+
 			conexaoCliente.registrarCliente(getClienteLocal());
-			
-			fieldStatusCliente.append("Conectado e registrado com sucesso");
+
+			fieldStatusCliente.append("Conectado e registrado com sucesso\n");
+
 		} catch (Exception e) {
 			fieldStatusCliente.append("\n\n-------------------------------------------------------\n"
 					+ "ERRO: VERIFIQUE SE O SERVIDOR ESTÃO RODANDO, SE O IP E PORTA ESTÃO"
@@ -456,25 +503,45 @@ public class InterfacePrincipal extends JFrame implements IServer {
 					+ "-------------------------------------------------------------------\n\n");
 			fieldStatusCliente.append(e.toString());
 		}
-		
+
 		btnProcurar.setEnabled(true);
 		btnBaixar.setEnabled(true);
-		btnUpar.setEnabled(true);
+		// btnUpar.setEnabled(true);
 		btnSair.setEnabled(true);
 		fieldIp.setEnabled(false);
 		fieldPorta.setEnabled(false);
 		btnConectar.setEnabled(false);
+
+		Thread up = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+
+				uparArquivos();
+				System.out.println("upando");
+
+			}
+		});
+
+		try {
+			up.start();
+			Thread.sleep(0);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 	}
-	
+
 	public void desconectar() {
 		try {
 			Cliente c = getClienteLocal();
 			conexaoCliente.desconectar(c);
 			fieldStatusCliente.append("Desconectado");
-			
+
 			btnProcurar.setEnabled(false);
 			btnBaixar.setEnabled(false);
-			btnUpar.setEnabled(false);
+			// btnUpar.setEnabled(false);
 			btnSair.setEnabled(false);
 			fieldIp.setEnabled(true);
 			fieldPorta.setEnabled(true);
@@ -528,13 +595,14 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	public void registrarCliente(Cliente c) throws RemoteException {
 		if (c != null) {
 			if (!mapaArquivos.containsKey(c)) {
-				mapaArquivos.put(c, null);
+				List<Arquivo> lista = new ArrayList<>();
+				mapaArquivos.put(c, lista);
 				fieldStatus.append("Cliente " + c.getNome() + "com o IP:" + c.getIp() + " se conectou...\n");
 			} else {
-				fieldStatus.append("Cliente já cadastrado");
+				fieldStatus.append("Cliente já cadastrado\n");
 			}
 		} else {
-			fieldStatus.append("Cliente recebido Nulo");
+			fieldStatus.append("Cliente recebido Nulo\n");
 		}
 	}
 
@@ -542,13 +610,13 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista) throws RemoteException {
 		if (mapaArquivos.containsKey(c)) {
 			mapaArquivos.entrySet().forEach(e -> {
-				if (c.equals(e)) {
+				if (e.getKey().equals(c)) {
 					e.setValue(lista);
-					fieldStatus.append("Lista de arquivos de " + c.getNome() + " foi atualizada...\n");
+					fieldStatus.append("Lista de arquivos de " + e.getKey().getNome() + " foi atualizada...\n");
 				}
 			});
 		} else {
-			fieldStatus.append("Cliente não encontrado");
+			fieldStatus.append("Cliente não encontrado\n");
 		}
 	}
 
@@ -556,64 +624,53 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String query, TipoFiltro tipoFiltro, String filtro)
 			throws RemoteException {
 		Map<Cliente, List<Arquivo>> mapaResult = new HashMap<>();
-//		List<Arquivo> listaResult = new ArrayList<>();
-//
-//		Set<Cliente> cliente = mapaArquivos.keySet();
+		List<Arquivo> listaResult = new ArrayList<>();
 
-		mapaArquivos.forEach((c, la) -> {
-			System.out.println(c.toString());
-			la.forEach(e -> {
-				System.out.println(e.getNome());
-			});
-		});
-		
-//		for (Iterator<Cliente> iterator = cliente.iterator(); iterator.hasNext();) {
-//			Cliente cl = iterator.next();
-//			System.out.println(cl.toString());
-//			if (cl != null) {
-//				List<Arquivo> listaCliente = mapaArquivos.get(cl);
-//				listaResult.clear();
-//				listaCliente.forEach(e -> {
-//					switch (tipoFiltro) {
-//					case NOME:
-//						if (e.getNome().contains(query)) {
-//							listaResult.add(e);
-//						}
-//						break;
-//
-//					case TAMANHO_MIN:
-//						if (e.getTamanho() >= Long.getLong(filtro)) {
-//							if(e.getNome().contains(query)){
-//								listaResult.add(e);
-//							}
-//						}
-//						break;
-//
-//					case TAMANHO_MAX:
-//						if (e.getTamanho() <= Long.getLong(filtro)) {
-//							if (e.getNome().contains(query)) {
-//								listaResult.add(e);
-//							}
-//						}
-//						break;
-//
-//					case EXTENSAO:
-//						if (e.getExtensao().contains(query)) {
-//							if (e.getNome().contains(query)) {
-//								listaResult.add(e);
-//							}
-//						}
-//						break;
-//
-//					default:
-//						break;
-//					}
-//				});
-//				if (listaResult.size() > 0) {
-//					mapaResult.put(cl, listaResult);
-//				}
-//			}
-//		}
+		for (Entry<Cliente, List<Arquivo>> e : mapaArquivos.entrySet()) {
+			Cliente c = new Cliente();
+			c.setIp(e.getKey().getIp());
+			c.setNome(e.getKey().getNome());
+			c.setPorta(e.getKey().getPorta());
+			listaResult.clear();
+			for (Arquivo arquivo : e.getValue()) {
+				switch (tipoFiltro) {
+				case NOME:
+					if (arquivo.getNome().contains(query)) {
+						listaResult.add(arquivo);
+					}
+					break;
+
+				case TAMANHO_MIN:
+					if (arquivo.getTamanho() >= Integer.valueOf(filtro)) {
+						if (arquivo.getNome().contains(query)) {
+							listaResult.add(arquivo);
+						}
+					}
+					break;
+
+				case TAMANHO_MAX:
+					if (arquivo.getTamanho() <= Integer.valueOf(filtro)) {
+						if (arquivo.getNome().contains(query)) {
+							listaResult.add(arquivo);
+						}
+					} 
+					break;
+
+				case EXTENSAO:
+					if (arquivo.getExtensao().contains(filtro)) {
+						if (arquivo.getNome().contains(query)) {
+							listaResult.add(arquivo);
+						}
+					} 
+					break;
+				default:
+					listaResult.add(arquivo);
+					break;
+				}
+
+			}
+			mapaResult.put(c, listaResult);
+		}
 		return mapaResult;
 	}
 
@@ -638,10 +695,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				mapaArquivos.remove(c);
 				fieldStatus.append("Cliente " + c.getNome() + "com o IP:" + c.getIp() + " se desconectou...\n");
 			} else {
-				fieldStatus.append("Cliente não encontrado");
+				fieldStatus.append("Cliente não encontrado\n");
 			}
 		} else {
-			fieldStatus.append("Cliente recebido Nulo");
+			fieldStatus.append("Cliente recebido Nulo\n");
 		}
 	}
 }

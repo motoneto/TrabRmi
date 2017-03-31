@@ -1,4 +1,4 @@
-package br.testes;
+package br.univel.jshare.comum;
 
 import java.util.List;
 import java.util.Map;
@@ -6,9 +6,6 @@ import java.util.Map.Entry;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-
-import br.univel.jshare.comum.Arquivo;
-import br.univel.jshare.comum.Cliente;
 
 public class MeuModelo extends AbstractTableModel implements TableModel {
 
@@ -23,7 +20,7 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 			linhas+=e.getValue().size();
 		}
 		
-		matriz = new Object[linhas][5];
+		matriz = new Object[linhas][8];
 		
 		int linha = 0;
 		
@@ -33,7 +30,10 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 				matriz[linha][1] = e.getKey().getIp();
 				matriz[linha][2] = e.getKey().getPorta();
 				matriz[linha][3] = arq.getNome();
-				matriz[linha][4] = arq.getTamanho();
+				matriz[linha][4] = arq.getPath();
+				matriz[linha][5] = arq.getExtensao();
+				matriz[linha][6] = arq.getTamanho();
+				matriz[linha][7] = arq.getMd5();
 				linha++;
 			}
 		}
@@ -41,7 +41,7 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 5;
+		return 8;
 	}
 
 	@Override

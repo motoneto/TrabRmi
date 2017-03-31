@@ -130,4 +130,10 @@ public class Arquivo implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Arquivo [id=" + id + ", path=" + path + ", nome=" + nome + ", extensao=" + extensao + ", tamanho="
+				+ tamanho + ", md5=" + md5 + ", dataHoraModificacao=" + dataHoraModificacao + "]";
+	}
+
 }
