@@ -1,25 +1,23 @@
 package br.univel.jshare.comum;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ValidadorMd5 {
 
-	
-	private static byte[] md5;
-
-	public static String getMd5(byte[] bytes) {
-		
-		MessageDigest md;
+	public static String MD5(String md5) {
 		try {
-			md = MessageDigest.getInstance("MD5");
-			md5 = md.digest(bytes);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+			byte[] array = md.digest(md5.getBytes());
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < array.length; ++i) {
+				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+			}
+			return sb.toString();
+		} catch (java.security.NoSuchAlgorithmException e) {
 		}
-		
-		return md5.toString();
+		return null;
 	}
-	
 }

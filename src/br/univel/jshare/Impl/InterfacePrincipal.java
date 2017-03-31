@@ -283,8 +283,8 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		gbc_lblTipofiltro.gridy = 2;
 		panel_1.add(lblTipofiltro, gbc_lblTipofiltro);
 
-		comboTipoFiltro = new JComboBox();
-		comboTipoFiltro.setModel(new DefaultComboBoxModel(TipoFiltro.values()));
+		comboTipoFiltro = new JComboBox<TipoFiltro>();
+		comboTipoFiltro.setModel(new DefaultComboBoxModel<TipoFiltro>(TipoFiltro.values()));
 		GridBagConstraints gbc_comboTipoFiltro = new GridBagConstraints();
 		gbc_comboTipoFiltro.insets = new Insets(0, 0, 5, 5);
 		gbc_comboTipoFiltro.fill = GridBagConstraints.HORIZONTAL;
@@ -387,10 +387,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				byte[] md;
 				try {
 					md = Files.readAllBytes(Paths.get(file.getPath()));
-					arq.setMd5(ValidadorMd5.getMd5(md));
-					System.out.println(ValidadorMd5.getMd5(md));
+					
+					arq.setMd5(ValidadorMd5.MD5(md.toString()));
+					System.out.println("1 -->> " + ValidadorMd5.MD5(md.toString()));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				listaArquivos.add(arq);
@@ -438,7 +438,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			if(bytes == null){
 				System.out.println("veio nulo");
 			}else{
-				String bytesBaixado = ValidadorMd5.getMd5(bytes);
+				
+				System.out.println("2-->>" + bytes);
+				
+				String bytesBaixado = ValidadorMd5.MD5(bytes.toString());
 				if (a.getMd5().equals(bytesBaixado)) {
 					fieldStatusCliente.append("Arquivo ìntegro baixado");
 					escreva(new File("cópia_de_" + a.getNome()), bytes);
@@ -449,7 +452,6 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			}
 
 		} catch (RemoteException | NotBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -473,7 +475,6 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			ip = InetAddress.getLocalHost().getHostAddress();
 			nome = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -527,7 +528,6 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			up.start();
 			Thread.sleep(0);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
