@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,9 +45,9 @@ import javax.swing.table.TableModel;
 import br.univel.jshare.comum.Arquivo;
 import br.univel.jshare.comum.Cliente;
 import br.univel.jshare.comum.IServer;
+import br.univel.jshare.comum.Md5Util;
 import br.univel.jshare.comum.MeuModelo;
 import br.univel.jshare.comum.TipoFiltro;
-import br.univel.jshare.comum.ValidadorMd5;
 
 public class InterfacePrincipal extends JFrame implements IServer {
 
@@ -384,15 +382,8 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				arq.setExtensao(extensao);
 				arq.setPath(file.getPath());
 				arq.setDataHoraModificacao(new Date(file.lastModified()));
-				byte[] md;
-				try {
-					md = Files.readAllBytes(Paths.get(file.getPath()));
-					
-					arq.setMd5(ValidadorMd5.MD5(md.toString()));
-					System.out.println("1 -->> " + ValidadorMd5.MD5(md.toString()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				arq.setMd5(Md5Util.getMD5Checksum(arq.getPath()));
+				System.out.println("1 -->> " + Md5Util.getMD5Checksum(arq.getPath()));
 				listaArquivos.add(arq);
 			}
 		}
@@ -441,7 +432,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				
 				System.out.println("2-->>" + bytes);
 				
-				String bytesBaixado = ValidadorMd5.MD5(bytes.toString());
+				String bytesBaixado = Md5Util.getMD5Checksum(a.getPath());
 				if (a.getMd5().equals(bytesBaixado)) {
 					fieldStatusCliente.append("Arquivo ìntegro baixado");
 					escreva(new File("cópia_de_" + a.getNome()), bytes);
