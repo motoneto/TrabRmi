@@ -50,7 +50,6 @@ import br.univel.jshare.comum.MeuModelo;
 import br.univel.jshare.comum.TipoFiltro;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.ScrollPaneConstants;
 
 public class InterfacePrincipal extends JFrame implements IServer {
 
@@ -548,7 +547,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 					uparArquivos();
 					System.out.println("upando");
 					try {
-						Thread.sleep(3000);
+						Thread.sleep(300000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
