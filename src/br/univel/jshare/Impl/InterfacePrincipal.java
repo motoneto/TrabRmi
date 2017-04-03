@@ -48,6 +48,9 @@ import br.univel.jshare.comum.IServer;
 import br.univel.jshare.comum.Md5Util;
 import br.univel.jshare.comum.MeuModelo;
 import br.univel.jshare.comum.TipoFiltro;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ScrollPaneConstants;
 
 public class InterfacePrincipal extends JFrame implements IServer {
 
@@ -83,6 +86,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	IServer conexaoCliente;
 	Registry registryConexaoCliente;
 	private JTable tbArquivos;
+	private JScrollPane scrollPane_1;
+	private JScrollPane scrollPane_2;
+	private JButton btnIniciar;
+	private Thread up;
 
 	/**
 	 * Launch the application.
@@ -105,7 +112,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	 */
 	public InterfacePrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1000, 600);
+		setBounds(100, 100, 500, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -128,20 +135,37 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		splitPane.setRightComponent(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 0, 0, 0 };
-		gbl_panel.rowHeights = new int[] { 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0 };
 		gbl_panel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 1.0, 1.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 1.0, 1.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
+		btnIniciar = new JButton("Iniciar");
+		btnIniciar.setEnabled(false);
+		btnIniciar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				iniciaServico();
+			}
+		});
+		GridBagConstraints gbc_btnIniciar = new GridBagConstraints();
+		gbc_btnIniciar.fill = GridBagConstraints.BOTH;
+		gbc_btnIniciar.gridheight = 2;
+		gbc_btnIniciar.insets = new Insets(0, 0, 5, 5);
+		gbc_btnIniciar.gridx = 0;
+		gbc_btnIniciar.gridy = 0;
+		panel.add(btnIniciar, gbc_btnIniciar);
+
+		scrollPane_1 = new JScrollPane();
+		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
+		gbc_scrollPane_1.gridheight = 3;
+		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_1.gridx = 1;
+		gbc_scrollPane_1.gridy = 0;
+		panel.add(scrollPane_1, gbc_scrollPane_1);
+
 		fieldStatus = new JTextArea();
+		scrollPane_1.setViewportView(fieldStatus);
 		fieldStatus.setEditable(false);
-		GridBagConstraints gbc_fieldStatus = new GridBagConstraints();
-		gbc_fieldStatus.gridheight = 2;
-		gbc_fieldStatus.insets = new Insets(0, 0, 5, 0);
-		gbc_fieldStatus.fill = GridBagConstraints.BOTH;
-		gbc_fieldStatus.gridx = 1;
-		gbc_fieldStatus.gridy = 0;
-		panel.add(fieldStatus, gbc_fieldStatus);
 
 		btnParar = new JButton("Parar");
 		btnParar.addActionListener(new ActionListener() {
@@ -151,11 +175,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		});
 		btnParar.setEnabled(false);
 		GridBagConstraints gbc_btnParar = new GridBagConstraints();
-		gbc_btnParar.gridheight = 2;
 		gbc_btnParar.fill = GridBagConstraints.BOTH;
 		gbc_btnParar.insets = new Insets(0, 0, 0, 5);
 		gbc_btnParar.gridx = 0;
-		gbc_btnParar.gridy = 0;
+		gbc_btnParar.gridy = 2;
 		panel.add(btnParar, gbc_btnParar);
 
 		JPanel panel_1 = new JPanel();
@@ -163,7 +186,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
 		gbl_panel_1.columnWidths = new int[] { 0, 0, 0, 0, 75, 0, 0 };
 		gbl_panel_1.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
-		gbl_panel_1.columnWeights = new double[] { 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel_1.columnWeights = new double[] { 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		gbl_panel_1.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE };
 		panel_1.setLayout(gbl_panel_1);
 
@@ -335,14 +358,25 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		fieldStatusCliente.setEditable(false);
 		scrollPane.setViewportView(fieldStatusCliente);
 
+		scrollPane_2 = new JScrollPane();
+		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
+		gbc_scrollPane_2.gridwidth = 6;
+		gbc_scrollPane_2.insets = new Insets(0, 0, 0, 5);
+		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_2.gridx = 0;
+		gbc_scrollPane_2.gridy = 4;
+		panel_1.add(scrollPane_2, gbc_scrollPane_2);
+
 		tbArquivos = new JTable();
-		GridBagConstraints gbc_tbArquivos = new GridBagConstraints();
-		gbc_tbArquivos.gridwidth = 6;
-		gbc_tbArquivos.insets = new Insets(0, 0, 0, 5);
-		gbc_tbArquivos.fill = GridBagConstraints.BOTH;
-		gbc_tbArquivos.gridx = 0;
-		gbc_tbArquivos.gridy = 4;
-		panel_1.add(tbArquivos, gbc_tbArquivos);
+		scrollPane_2.setViewportView(tbArquivos);
+		tbArquivos.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					fazerDowload();
+				}
+			}
+		});
 		splitPane.setDividerLocation(400);
 
 		iniciaServico();
@@ -383,7 +417,8 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				arq.setPath(file.getPath());
 				arq.setDataHoraModificacao(new Date(file.lastModified()));
 				arq.setMd5(Md5Util.getMD5Checksum(arq.getPath()));
-				System.out.println("1 -->> " + Md5Util.getMD5Checksum(arq.getPath()));
+				// System.out.println("1 -->> " +
+				// Md5Util.getMD5Checksum(arq.getPath()));
 				listaArquivos.add(arq);
 			}
 		}
@@ -426,17 +461,17 @@ public class InterfacePrincipal extends JFrame implements IServer {
 
 			byte[] bytes = conDownload.baixarArquivo(c, a);
 
-			if(bytes == null){
+			if (bytes == null) {
 				System.out.println("veio nulo");
-			}else{
-				
+			} else {
+
 				System.out.println("2-->>" + bytes);
-				
+
 				String bytesBaixado = Md5Util.getMD5Checksum(a.getPath());
 				if (a.getMd5().equals(bytesBaixado)) {
 					fieldStatusCliente.append("Arquivo ìntegro baixado");
 					escreva(new File("cópia_de_" + a.getNome()), bytes);
-				}else{
+				} else {
 					fieldStatusCliente.append("Arquivo corrompido baixado");
 					escreva(new File("cópia_de_" + a.getNome()), bytes);
 				}
@@ -504,34 +539,33 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		fieldPorta.setEnabled(false);
 		btnConectar.setEnabled(false);
 
-		Thread up = new Thread(new Runnable() {
+		up = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 
-				uparArquivos();
-				System.out.println("upando");
-				try {
-					Thread.sleep(30000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				while (true) {
+					uparArquivos();
+					System.out.println("upando");
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
 
-		
-			up.start();
-			
-	
+		up.start();
 
 	}
-
+	
 	public void desconectar() {
 		try {
 			Cliente c = getClienteLocal();
 			conexaoCliente.desconectar(c);
-			fieldStatusCliente.append("Desconectado");
-
+			fieldStatusCliente.append("Você se desconectou\n");
+			up.stop();
 			btnProcurar.setEnabled(false);
 			btnBaixar.setEnabled(false);
 			// btnUpar.setEnabled(false);
@@ -557,9 +591,8 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			}
 			registryConexaoServidor = LocateRegistry.createRegistry(PORTA_SERVER);
 			registryConexaoServidor.rebind(IServer.NOME_SERVICO, conexaoServidor);
-			fieldStatus.append("Aguardando Conexões\n");
+			fieldStatus.append("Servidor startado, aguardando Conexões\n");
 			btnParar.setEnabled(true);
-			fieldStatus.append("servidor startado\n");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -568,6 +601,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	public void pararServico() {
 		btnParar.setEnabled(false);
 		btnConectar.setEnabled(true);
+		btnIniciar.setEnabled(true);
 
 		try {
 			UnicastRemoteObject.unexportObject(registryConexaoServidor, true);
@@ -646,7 +680,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 						if (arquivo.getNome().contains(query)) {
 							listaResult.add(arquivo);
 						}
-					} 
+					}
 					break;
 
 				case EXTENSAO:
@@ -654,7 +688,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 						if (arquivo.getNome().contains(query)) {
 							listaResult.add(arquivo);
 						}
-					} 
+					}
 					break;
 				default:
 					listaResult.add(arquivo);
