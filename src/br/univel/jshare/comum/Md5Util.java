@@ -39,6 +39,7 @@ public class Md5Util {
 	public static String getMD5Checksum(String filename) {
 		byte[] b;
 		try {
+			System.out.println(filename);
 			b = createChecksum(filename);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
