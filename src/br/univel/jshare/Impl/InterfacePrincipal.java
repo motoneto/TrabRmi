@@ -111,6 +111,8 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	 * Create the frame.
 	 */
 	public InterfacePrincipal() {
+		mapaArquivos = new HashMap<>();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1000, 600);
 		contentPane = new JPanel();
@@ -544,7 +546,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				while (true) {
 					uparArquivos();
 					try {
-						Thread.sleep(30000);
+						Thread.sleep(300000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

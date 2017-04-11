@@ -53,5 +53,21 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		return matriz[rowIndex][columnIndex];
 	}
+	
+	public String getColumnName(int i){
+		
+		switch(i){
+		case 0: return "Nome Arquivo";
+		case 1: return "Nome Cliente";
+		case 2: return "IP";
+		case 3: return "Porta";
+		case 4: return "Path";
+		case 5: return "Extensão";
+		case 6: return "Tamanho";
+		case 7: return "Hash";
+		}
+		
+		return null;
+	}
 
 }
