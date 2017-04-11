@@ -26,10 +26,10 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 		
 		for (Entry<Cliente, List<Arquivo>> e : mapa.entrySet()) {
 			for (Arquivo arq : e.getValue()) {
-				matriz[linha][0] = e.getKey().getNome();
-				matriz[linha][1] = e.getKey().getIp();
-				matriz[linha][2] = e.getKey().getPorta();
-				matriz[linha][3] = arq.getNome();
+				matriz[linha][0] = arq.getNome();
+				matriz[linha][1] = e.getKey().getNome();
+				matriz[linha][2] = e.getKey().getIp();
+				matriz[linha][3] = e.getKey().getPorta();
 				matriz[linha][4] = arq.getPath();
 				matriz[linha][5] = arq.getExtensao();
 				matriz[linha][6] = arq.getTamanho();

@@ -446,14 +446,16 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		Arquivo a = new Arquivo();
 
 		int linha = tbArquivos.getSelectedRow();
-		c.setNome(tbArquivos.getValueAt(linha, 0).toString());
-		c.setIp(tbArquivos.getValueAt(linha, 1).toString());
-		c.setPorta(Integer.valueOf(tbArquivos.getValueAt(linha, 2).toString()));
-		a.setNome(tbArquivos.getValueAt(linha, 3).toString());
-		a.setPath(tbArquivos.getValueAt(linha, 4).toString());
-		a.setExtensao(tbArquivos.getValueAt(linha, 5).toString());
-		a.setTamanho(Integer.valueOf(tbArquivos.getValueAt(linha, 6).toString()));
-		a.setMd5(tbArquivos.getValueAt(linha, 7).toString());
+		int i = 0;
+		
+		a.setNome(tbArquivos.getValueAt(linha, i++).toString());
+		c.setNome(tbArquivos.getValueAt(linha, i++).toString());
+		c.setIp(tbArquivos.getValueAt(linha, i++).toString());
+		c.setPorta(Integer.valueOf(tbArquivos.getValueAt(linha, i++).toString()));
+		a.setPath(tbArquivos.getValueAt(linha, i++).toString());
+		a.setExtensao(tbArquivos.getValueAt(linha, i++).toString());
+		a.setTamanho(Integer.valueOf(tbArquivos.getValueAt(linha, i++).toString()));
+		a.setMd5(tbArquivos.getValueAt(linha, i++).toString());
 
 		try {
 			Registry registryConDowload = LocateRegistry.getRegistry(c.getIp(), c.getPorta());
@@ -542,7 +544,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 				while (true) {
 					uparArquivos();
 					try {
-						Thread.sleep(300000);
+						Thread.sleep(30000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
