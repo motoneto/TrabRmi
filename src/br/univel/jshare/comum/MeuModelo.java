@@ -27,13 +27,13 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 		for (Entry<Cliente, List<Arquivo>> e : mapa.entrySet()) {
 			for (Arquivo arq : e.getValue()) {
 				matriz[linha][0] = arq.getNome();
-				matriz[linha][1] = e.getKey().getNome();
-				matriz[linha][2] = e.getKey().getIp();
-				matriz[linha][3] = e.getKey().getPorta();
-				matriz[linha][4] = arq.getPath();
-				matriz[linha][5] = arq.getExtensao();
-				matriz[linha][6] = arq.getTamanho();
-				matriz[linha][7] = arq.getMd5();
+				matriz[linha][1] = arq.getExtensao();
+				matriz[linha][2] = arq.getPath();
+				matriz[linha][3] = arq.getTamanho();
+				matriz[linha][4] = arq.getMd5();
+				matriz[linha][5] = e.getKey().getNome();
+				matriz[linha][6] = e.getKey().getIp();
+				matriz[linha][7] = e.getKey().getPorta();
 				linha++;
 			}
 		}
@@ -58,13 +58,13 @@ public class MeuModelo extends AbstractTableModel implements TableModel {
 		
 		switch(i){
 		case 0: return "Nome Arquivo";
-		case 1: return "Nome Cliente";
-		case 2: return "IP";
-		case 3: return "Porta";
-		case 4: return "Path";
-		case 5: return "Extensão";
-		case 6: return "Tamanho";
-		case 7: return "Hash";
+		case 5: return "Portador";
+		case 6: return "IP";
+		case 7: return "Porta";
+		case 2: return "Path";
+		case 1: return "Extensão";
+		case 3: return "Tamanho";
+		case 4: return "Hash";
 		}
 		
 		return null;

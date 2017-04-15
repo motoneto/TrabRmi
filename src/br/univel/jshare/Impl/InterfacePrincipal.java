@@ -112,9 +112,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 	 */
 	public InterfacePrincipal() {
 		mapaArquivos = new HashMap<>();
-		
+
+		setTitle(getClienteLocal().getIp());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1000, 600);
+		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -414,9 +415,10 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		for (File file : dirStart.listFiles()) {
 			if (file.isFile()) {
 				Arquivo arq = new Arquivo();
-				arq.setNome(file.getName());
+				arq.setNome(file.getName().substring(0, file.getName().lastIndexOf(".")));
+				System.out.println(arq.getNome());
 				arq.setTamanho(file.length());
-				String extensao = file.getName().substring(file.getName().lastIndexOf("."), file.getName().length());
+				String extensao = file.getName().substring(file.getName().lastIndexOf(".") + 1, file.getName().length());
 				arq.setExtensao(extensao);
 				arq.setPath(file.getPath());
 				arq.setDataHoraModificacao(new Date(file.lastModified()));
@@ -431,7 +433,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		String query = fieldQuery.getText();
 		String filtro = fieldFiltro.getText();
 		TipoFiltro tipoFiltro = TipoFiltro.valueOf(comboTipoFiltro.getSelectedItem().toString());
-		fieldStatusCliente.append("\tQuery: " + query + "\tfiltro: " + filtro + "\tTipoFiltro: " + tipoFiltro + "\n");
+//		fieldStatusCliente.append("\tQuery: " + query + "\tfiltro: " + filtro + "\tTipoFiltro: " + tipoFiltro + "\n");
 		try {
 			Map<Cliente, List<Arquivo>> resultMap = conexaoCliente.procurarArquivo(query, tipoFiltro, filtro);
 
@@ -451,13 +453,13 @@ public class InterfacePrincipal extends JFrame implements IServer {
 		int i = 0;
 		
 		a.setNome(tbArquivos.getValueAt(linha, i++).toString());
+		a.setExtensao(tbArquivos.getValueAt(linha, i++).toString());
+		a.setPath(tbArquivos.getValueAt(linha, i++).toString());
+		a.setTamanho(Integer.valueOf(tbArquivos.getValueAt(linha, i++).toString()));
+		a.setMd5(tbArquivos.getValueAt(linha, i++).toString());
 		c.setNome(tbArquivos.getValueAt(linha, i++).toString());
 		c.setIp(tbArquivos.getValueAt(linha, i++).toString());
 		c.setPorta(Integer.valueOf(tbArquivos.getValueAt(linha, i++).toString()));
-		a.setPath(tbArquivos.getValueAt(linha, i++).toString());
-		a.setExtensao(tbArquivos.getValueAt(linha, i++).toString());
-		a.setTamanho(Integer.valueOf(tbArquivos.getValueAt(linha, i++).toString()));
-		a.setMd5(tbArquivos.getValueAt(linha, i++).toString());
 
 		try {
 			Registry registryConDowload = LocateRegistry.getRegistry(c.getIp(), c.getPorta());
@@ -467,7 +469,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 
 			if (bytes == null) {
 			} else {
-				String nome = "cópia_de_"+ a.getNome().toString();
+				String nome = "cópia_de_"+ a.getNome().toString() +"."+ a.getExtensao();
 				escreva(new File(nome), bytes);
 				String bytesBaixado = Md5Util.getMD5Checksum("." + File.separatorChar + "shared" + File.separatorChar + nome);
 				if (a.getMd5().equals(bytesBaixado)) {
@@ -655,14 +657,14 @@ public class InterfacePrincipal extends JFrame implements IServer {
 			for (Arquivo arquivo : e.getValue()) {
 				switch (tipoFiltro) {
 				case NOME:
-					if (arquivo.getNome().equalsIgnoreCase(query)) {
+					if (arquivo.getNome().contains(query)) {
 						listaResult.add(arquivo);
 					}
 					break;
 
 				case TAMANHO_MIN:
 					if (arquivo.getTamanho() >= Integer.valueOf(filtro)) {
-						if (arquivo.getNome().equalsIgnoreCase(query)) {
+						if (arquivo.getNome().contains(query)) {
 							listaResult.add(arquivo);
 						}
 					}
@@ -670,7 +672,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 
 				case TAMANHO_MAX:
 					if (arquivo.getTamanho() <= Integer.valueOf(filtro)) {
-						if (arquivo.getNome().equalsIgnoreCase(query)) {
+						if (arquivo.getNome().contains(query)) {
 							listaResult.add(arquivo);
 						}
 					}
@@ -678,7 +680,7 @@ public class InterfacePrincipal extends JFrame implements IServer {
 
 				case EXTENSAO:
 					if (arquivo.getExtensao().contains(filtro)) {
-						if (arquivo.getNome().equalsIgnoreCase(query)) {
+						if (arquivo.getNome().contains(query)) {
 							listaResult.add(arquivo);
 						}
 					}
